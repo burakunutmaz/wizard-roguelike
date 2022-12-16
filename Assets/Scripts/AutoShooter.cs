@@ -35,7 +35,6 @@ public class AutoShooter : MonoBehaviour
                 var shot = Instantiate(shotPrefab, pos, Quaternion.identity);
                 Vector3 enemyDir = new Vector3(enemyPos.x, pos.y, enemyPos.z) - pos;
                 enemyDir.Normalize();
-                Debug.Log(enemyDir);
                 shot.GetComponent<Bullet>().ShootTheShot(enemyDir);
             }
             yield return new WaitForSeconds(fireInterval);

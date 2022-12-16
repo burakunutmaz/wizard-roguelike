@@ -16,16 +16,23 @@ public class GameManager : MonoBehaviour
     [SerializeField] float currentExp;
     [SerializeField] int playerLevel;
     [SerializeField] float levelExpLimit;
-    [SerializeField] int currentTime;
+    [SerializeField] float currentTime;
     [SerializeField] int goldCoinCount;
+    [SerializeField] float enemySpawnRate;
+    [SerializeField] int enemySpawnCount;
+    [SerializeField] float luck;
 
     [Header("UI")]
     [SerializeField] TextMeshProUGUI timerText;
     [SerializeField] TextMeshProUGUI goldText;
     [SerializeField] TextMeshProUGUI levelText;
     [SerializeField] Slider expBarSlider;
+    [SerializeField] GameObject pausePanel;
 
+    [Header("Game")]
+    [SerializeField] WaveController wc;
 
+    int waveCount;
     private int secs, mins;
 
     private void Awake()
@@ -35,6 +42,7 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
+        waveCount = 0;
         currentTime = 0;
         goldCoinCount = 0;
         currentExp = 0;
@@ -50,11 +58,23 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        currentTime = Mathf.FloorToInt(Time.fixedTime);
-        secs = currentTime % 60;
-        mins = currentTime / 60;
+        currentTime = Time.fixedTime;
+        secs = Mathf.RoundToInt(currentTime) % 60;
+        mins = Mathf.RoundToInt(currentTime) / 60;
 
         timerText.text = mins + ":" + secs;
+
+        if (currentTime >= 30 * waveCount)
+        {
+            Debug.Log("Spawning a wave");
+            waveCount += 1;
+            wc.SpawnAreaWave();
+        }
+
+        if (currentTime == 300)
+        {
+            wc.SpawnBossWave();
+        }
     }
 
     public void gainExp(int expVal)
@@ -86,10 +106,12 @@ public class GameManager : MonoBehaviour
     public void PauseTheGame()
     {
         Time.timeScale = 0;
+        pausePanel.SetActive(true);
     }
 
     public void UnauseTheGame()
     {
         Time.timeScale = 1;
+        pausePanel.SetActive(false);
     }
 }
